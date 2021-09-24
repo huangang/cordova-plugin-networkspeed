@@ -16,16 +16,22 @@ import java.util.Locale;
 public class NetworkSpeedPlugin extends CordovaPlugin {
     private static final String GET_NETWORK_SPEED = "getNetworkSpeed";
 
-    private long mLastRxBytes = 0;
-    private long mLastTxBytes = 0;
-    private long mLastTime = 0;
+    private long lastTotalRxBytes = 0;
+    private long lastTimeStamp = 0;
+
+    private long lastDownLoadBytes = 0;
+    private long lastUpLoadBytes = 0;
+    private long lastDownLoadBytesUid = 0;
+    private long lastUpLoadBytesUid = 0;
+
+    private long lastDownLoadTimeStamp = 0;
+    private long lastUpLoadTimeStamp = 0;
+    private long lastUpLoadTimeStampUid = 0;
+    private long lastDownLoadTimeStampUid = 0;
 
     @Override
     protected void pluginInitialize() {
         super.pluginInitialize();
-        mLastRxBytes = TrafficStats.getTotalRxBytes();
-        mLastTxBytes = TrafficStats.getTotalTxBytes();
-        mLastTime = System.currentTimeMillis();
         Log.e("Network Plugin Data", mLastRxBytes + "" + mLastTxBytes + "" + mLastTime);
     }
 
@@ -54,6 +60,47 @@ public class NetworkSpeedPlugin extends CordovaPlugin {
         return false;
     }
 
+     // 获取手机所有接收流量
+     public long getTotalRxBytes() {
+        long nowTimeStamp = System.currentTimeMillis();
+        long nowTotalRxBytes = TrafficStats.getTotalRxBytes() == TrafficStats.UNSUPPORTED ? 0 : (TrafficStats.getTotalRxBytes() / 1024);//转为KB
+        long speed = ((nowTotalRxBytes - lastDownLoadBytes) * 1000 / (nowTimeStamp - lastDownLoadTimeStamp));//毫秒转换
+        lastDownLoadTimeStamp = nowTimeStamp;
+        lastDownLoadBytes = nowTotalRxBytes;
+        return speed;
+    }
+
+    // 获取手机指定进程的接收流量
+    public long getTotalRxBytesByUid(int uid) {
+        long nowTimeStamp = System.currentTimeMillis();
+        long nowTotalRxBytes = TrafficStats.getUidRxBytes(uid) == TrafficStats.UNSUPPORTED ? 0 : (TrafficStats.getUidRxBytes(uid) / 1024);//转为KB
+        long speed = ((nowTotalRxBytes - lastDownLoadBytesUid) * 1000 / (nowTimeStamp - lastDownLoadTimeStampUid));//毫秒转换
+        lastDownLoadTimeStampUid = nowTimeStamp;
+        lastDownLoadBytesUid = nowTotalRxBytes;
+        return speed;
+
+    }
+
+    // 获取指定进程的发送流量
+    public long getTotalTxBytesByUid(int uid) {
+        long nowTimeStamp = System.currentTimeMillis();
+        long nowTotalTxBytes = TrafficStats.getUidTxBytes(uid) == TrafficStats.UNSUPPORTED ? 0 : (TrafficStats.getUidTxBytes(uid) / 1024);//转为KB
+        long speed = ((nowTotalTxBytes - lastUpLoadBytesUid) * 1000 / (nowTimeStamp - lastUpLoadTimeStampUid));//毫秒转换
+        lastUpLoadTimeStampUid = nowTimeStamp;
+        lastUpLoadBytesUid = nowTotalTxBytes;
+        return speed;
+    }
+
+    // 获取手机所有的发送流量
+    public long getTotalTxBytes() {
+        long nowTimeStamp = System.currentTimeMillis();
+        long nowTotalTxBytes = TrafficStats.getTotalTxBytes() == TrafficStats.UNSUPPORTED ? 0 : (TrafficStats.getTotalTxBytes() / 1024);//转为KB
+        long speed = ((nowTotalTxBytes - lastUpLoadBytes) * 1000 / (nowTimeStamp - lastUpLoadTimeStamp));//毫秒转换
+        lastUpLoadTimeStamp = nowTimeStamp;
+        lastUpLoadBytes = nowTotalTxBytes;
+        return speed;
+    }
+
     /**
      * Gets the network speed.
      *
@@ -63,28 +110,16 @@ public class NetworkSpeedPlugin extends CordovaPlugin {
      */
     private void getNetworkSpeed(CallbackContext callbackContext) {
         try {
-            long currentRxBytes = TrafficStats.getTotalRxBytes();
-            long currentTxBytes = TrafficStats.getTotalTxBytes();
-            long usedRxBytes = currentRxBytes - mLastRxBytes;
-            long usedTxBytes = currentTxBytes - mLastTxBytes;
-            long currentTime = System.currentTimeMillis();
-            long usedTime = currentTime - mLastTime;
-
-            mLastRxBytes = currentRxBytes;
-            mLastTxBytes = currentTxBytes;
-            mLastTime = currentTime;
-
-            long totalBytes = usedRxBytes + usedTxBytes;
-            double totalSpeed = 0;
-            if (usedTime > 0) {
-                totalSpeed = (double) totalBytes / usedTime;
-            }
-
-            if (totalSpeed > 1) {
-                callbackContext.success(String.valueOf((int)totalSpeed));
-            } else {
-                callbackContext.success(String.format(Locale.ENGLISH, "%.3f", totalSpeed));
-            }
+            long downLoadSpeed = getTotalRxBytes();
+            long upLoadSpeed = getTotalTxBytes();
+            long downLoadSpeedUid = getTotalRxBytesByUid(uid);
+            long upLoadSpeedUid = getTotalTxBytesByUid(uid);
+            JSONObject result = new JSONObject();
+            result.put("downLoadSpeed", String.valueOf(downLoadSpeed));
+            result.put("downLoadSpeedUid", String.valueOf(downLoadSpeedUid));
+            result.put("upLoadSpeed", String.valueOf(upLoadSpeed));
+            result.put("upLoadSpeedUid", String.valueOf(upLoadSpeedUid));
+            callbackContext.success(result);
         } catch (Exception e) {
             callbackContext.error(e.getMessage());
         }

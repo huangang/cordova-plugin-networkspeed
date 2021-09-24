@@ -5,7 +5,5 @@
 @interface CDVNetworkSpeed : CDVPlugin 
 
 - (void)getNetworkSpeed:(CDVInvokedUrlCommand*)command;
-- (void)startListenNetworkSpeed:(CDVInvokedUrlCommand*)command;
-- (void)stopListenNetworkSpeed:(CDVInvokedUrlCommand*)command;
 
 @end
