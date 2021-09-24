@@ -2,7 +2,7 @@
 #import <Cordova/CDVInvokedUrlCommand.h>
 #import "NSObject+CheckNetWorkBytes.h"
 
-@interface CDVNetwordSpeed : CDVPlugin 
+@interface CDVNetworkSpeed : CDVPlugin 
 
 - (void)getNetworkSpeed:(CDVInvokedUrlCommand*)command;
 
