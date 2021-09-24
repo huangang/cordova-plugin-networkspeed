@@ -1,15 +1,13 @@
 package com.networkspeed;
 
 import android.net.TrafficStats;
-import android.util.Log;
 import android.content.Context;
 
 import org.apache.cordova.CallbackContext;
 import org.apache.cordova.CordovaPlugin;
 import org.json.JSONArray;
 import org.json.JSONException;
-
-import java.util.Locale;
+import org.json.JSONObject;
 
 /**
  * This plugin utilizes the Android TrafficStats class to get the network speed.
@@ -33,7 +31,6 @@ public class NetworkSpeedPlugin extends CordovaPlugin {
     @Override
     protected void pluginInitialize() {
         super.pluginInitialize();
-        Log.e("Network Plugin Data", mLastRxBytes + "" + mLastTxBytes + "" + mLastTime);
     }
 
     /**
