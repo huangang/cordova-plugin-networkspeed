@@ -116,9 +116,9 @@ public class NetworkSpeedPlugin extends CordovaPlugin {
             long upLoadSpeedUid = getTotalTxBytesByUid(uid);
             JSONObject result = new JSONObject();
             result.put("downLoadSpeed", String.valueOf(downLoadSpeed));
-            result.put("downLoadSpeedUid", String.valueOf(downLoadSpeedUid));
+            result.put("downLoadSpeedCurrent", String.valueOf(downLoadSpeedUid));
             result.put("upLoadSpeed", String.valueOf(upLoadSpeed));
-            result.put("upLoadSpeedUid", String.valueOf(upLoadSpeedUid));
+            result.put("upLoadSpeedCurrent", String.valueOf(upLoadSpeedUid));
             callbackContext.success(result);
         } catch (Exception e) {
             callbackContext.error(e.getMessage());
