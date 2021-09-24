@@ -15,4 +15,13 @@
     <config-file parent="/*" target="AndroidManifest.xml"/>
     <source-file src="src/android/NetworkSpeedPlugin.java" target-dir="src/com/networkspeed/"/>
   </platform>
+  <platform name="ios">
+    <config-file target="config.xml" parent="/*">
+			<feature name="networkspeed">
+				<param name="ios-package" value="CDVNetworkSpeed" onload="true" />
+			</feature>
+		</config-file>
+    <header-file src="src/ios/CDVNetworkSpeed.h" />
+    <source-file src="src/ios/CDVNetworkSpeed.m" />
+  </platform>
 </plugin>
