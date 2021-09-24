@@ -2,6 +2,7 @@ package com.networkspeed;
 
 import android.net.TrafficStats;
 import android.util.Log;
+import android.content.Context;
 
 import org.apache.cordova.CallbackContext;
 import org.apache.cordova.CordovaPlugin;
@@ -109,6 +110,8 @@ public class NetworkSpeedPlugin extends CordovaPlugin {
      * @return The network speed.
      */
     private void getNetworkSpeed(CallbackContext callbackContext) {
+        Context context = this.cordova.getActivity().getApplicationContext();
+        int uid = context.getApplicationInfo().uid;
         try {
             long downLoadSpeed = getTotalRxBytes();
             long upLoadSpeed = getTotalTxBytes();
