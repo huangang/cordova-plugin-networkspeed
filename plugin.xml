@@ -23,5 +23,7 @@
 		</config-file>
     <header-file src="src/ios/CDVNetworkSpeed.h" />
     <source-file src="src/ios/CDVNetworkSpeed.m" />
+    <header-file src="src/ios/NSObject+CheckNetWorkBytes.h"/>
+    <source-file src="src/ios/NSObject+CheckNetWorkBytes.m"/>
   </platform>
 </plugin>
